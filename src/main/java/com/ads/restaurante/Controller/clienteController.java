@@ -3,17 +3,18 @@ package com.ads.restaurante.Controller;
 
 import com.ads.restaurante.Model.clienteModel;
 import com.ads.restaurante.Repository.clienteRepository;
-
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @RestController
 @RequestMapping("/cliente")
 public class clienteController {
 
-    @Autowired
     private clienteRepository repository;
+
+    public clienteController(clienteRepository repository) {
+        this.repository = repository;
+    }
 
     @PostMapping("/addCliente")
     public String addCliente(@RequestBody clienteModel model){
@@ -31,6 +32,9 @@ public class clienteController {
         clienteModel model = repository.findById(clienteID).orElseThrow(() -> new RuntimeException("Cliente Não foi Encontrado"));
         model.setClientePassword(DetailModel.getClientePassword());
         model.setClienteUsername(DetailModel.getClienteUsername());
+        model.setEmailCliente(DetailModel.getEmailCliente());
+        model.setRedeSocialCliente(DetailModel.getRedeSocialCliente());
+        model.setTelefoneCliente(DetailModel.getTelefoneCliente());
 
         return repository.save(model);
     }

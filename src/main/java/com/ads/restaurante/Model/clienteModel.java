@@ -18,6 +18,12 @@ public class clienteModel {
 
     private String clientePassword;
 
+    private String emailCliente;
+
+    private String telefoneCliente;
+
+    private String redeSocialCliente;
+
     //GETTERS E SETTERS
 
     public Long getClienteID() {
@@ -44,11 +50,40 @@ public class clienteModel {
         this.clientePassword = clientePassword;
     }
 
+    public String getEmailCliente() {
+        return emailCliente;
+    }
+
+    public void setEmailCliente(String emailCliente) {
+        this.emailCliente = emailCliente;
+    }
+
+    public String getTelefoneCliente() {
+        return telefoneCliente;
+    }
+
+    public void setTelefoneCliente(String telefoneCliente) {
+        this.telefoneCliente = telefoneCliente;
+    }
+
+    public String getRedeSocialCliente() {
+        return redeSocialCliente;
+    }
+
+    public void setRedeSocialCliente(String redeSocialCliente) {
+        this.redeSocialCliente = redeSocialCliente;
+    }
+
+
     //Construtor
 
-    public clienteModel(Long clienteID, String clienteUsername, String clientePassword) {
+
+    public clienteModel(Long clienteID, String clienteUsername, String clientePassword, String emailCliente, String telefoneCliente, String redeSocialCliente) {
         this.clienteID = clienteID;
         this.clienteUsername = clienteUsername;
         this.clientePassword = clientePassword;
+        this.emailCliente = emailCliente;
+        this.telefoneCliente = telefoneCliente;
+        this.redeSocialCliente = redeSocialCliente;
     }
 }
