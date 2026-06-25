@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>La Maison — Restaurante À La Carte</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="restaurante.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">La Maison</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('login')">Entrar</button>
+    <button class="nav-tab" onclick="showPage('cardapio')">Cardápio</button>
+    <button class="nav-tab" onclick="showPage('pedidos')">Meus Pedidos <span class="nav-badge" id="badge-pedidos">0</span></button>
+    <button class="nav-tab" id="tab-manager" style="display:none" onclick="showPage('manager')">Manager</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem">
+    <div class="nav-user" id="nav-user">—</div>
+    <button id="btn-logout" style="display:none" onclick="doLogout()" class="btn-logout">Sair</button>
+  </div>
+</nav>
+
+<!-- LOGIN -->
+<div id="page-login" class="page active">
+  <div class="login-card">
+    <div class="login-title">La Maison</div>
+    <div class="login-sub">Restaurante À La Carte</div>
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="setLoginTab('cliente')">Cliente</button>
+      <button class="login-tab" onclick="setLoginTab('manager')">Manager</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Usuário</label>
+      <input class="form-input" id="login-user" type="text" placeholder="seu usuário" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input class="form-input" id="login-pass" type="password" placeholder="••••••••" />
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Entrar</button>
+    <div id="login-error" style="color:#f38ba8;font-size:0.75rem;text-align:center;margin-top:0.75rem;display:none"></div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <span style="color:var(--text-light);font-size:0.65rem;letter-spacing:0.1em">NÃO TEM CONTA? </span>
+      <button onclick="showPage('cadastro')" style="background:none;border:none;color:var(--gold);font-size:0.65rem;letter-spacing:0.1em;cursor:pointer;text-transform:uppercase">Cadastre-se</button>
+    </div>
+  </div>
+</div>
+
+<!-- CADASTRO -->
+<div id="page-cadastro" class="page">
+  <div class="login-card">
+    <div class="login-title">Cadastro</div>
+    <div class="login-sub">Crie sua conta</div>
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="setCadastroTab('cliente')">Cliente</button>
+      <button class="login-tab" onclick="setCadastroTab('manager')">Manager</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Usuário</label>
+      <input class="form-input" id="cad-user" type="text" placeholder="escolha um usuário" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input class="form-input" id="cad-pass" type="password" placeholder="mínimo 6 caracteres" />
+    </div>
+    <div id="cad-cliente-extra" style="display:block">
+      <div class="form-group">
+        <label class="form-label">Telefone</label>
+        <input class="form-input" id="cad-telefone" type="text" placeholder="(00) 00000-0000" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rede social</label>
+        <input class="form-input" id="cad-rede" type="text" placeholder="@seuperfil" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail</label>
+        <input class="form-input" id="cad-email" type="email" placeholder="email@exemplo.com" />
+      </div>
+    </div>
+    <div id="cad-cpf-group" class="form-group" style="display:none">
+      <label class="form-label">CPF (só números)</label>
+      <input class="form-input" id="cad-cpf" type="text" placeholder="00000000000" maxlength="11"/>
+    </div>
+    <button class="btn-primary" onclick="doCadastro()">Criar Conta</button>
+    <div id="cad-error" style="color:#f38ba8;font-size:0.75rem;text-align:center;margin-top:0.75rem;display:none"></div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button onclick="showPage('login')" style="background:none;border:none;color:var(--gold);font-size:0.65rem;letter-spacing:0.1em;cursor:pointer;text-transform:uppercase">← Voltar ao Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- CARDÁPIO -->
+<div id="page-cardapio" class="page">
+  <div class="page-header">
+    <div class="page-header-title">Cardápio</div>
+    <div class="page-header-sub">Seleção do Chef</div>
+    <div class="divider-ornament">✦</div>
+  </div>
+  <div id="cardapio-loading" style="text-align:center;padding:3rem;color:var(--text-light)">Carregando cardápio...</div>
+  <div class="cardapio-grid" id="cardapio-grid"></div>
+</div>
+
+<!-- PEDIDOS -->
+<div id="page-pedidos" class="page">
+  <div class="page-header">
+    <div class="page-header-title">Meus Pedidos</div>
+    <div class="page-header-sub">Histórico e acompanhamento</div>
+    <div class="divider-ornament">✦</div>
+  </div>
+  <div class="pedidos-container" id="pedidos-list"></div>
+</div>
+
+<!-- MANAGER -->
+<div id="page-manager" class="page">
+  <div class="page-header">
+    <div class="page-header-title">Painel do Manager</div>
+    <div class="page-header-sub">Gestão de pratos e divulgação</div>
+    <div class="divider-ornament">✦</div>
+  </div>
+  <div class="manager-container">
+    <div class="manager-grid">
+
+      <!-- Novo Prato -->
+      <div class="manager-card">
+        <div class="manager-card-title">✦ Novo Prato</div>
+        <div class="form-group">
+          <label class="form-label">Nome do Prato</label>
+          <input class="form-input" id="m-nome" type="text" placeholder="Ex: Risoto de Cogumelos"/>
+        </div>
+        <div class="input-row">
+          <div style="flex:1">
+            <label class="form-label">Valor (R$)</label>
+            <input class="form-input" id="m-valor" type="number" placeholder="0,00" step="0.01" min="0"/>
+          </div>
+          <div style="flex:1">
+            <label class="form-label">Status</label>
+            <select class="form-input select-input" id="m-status">
+              <option value="Preparando">Preparando</option>
+              <option value="Pronto">Pronto</option>
+              <option value="Finalizado">Finalizado</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="adicionarPrato()">Adicionar ao Cardápio</button>
+      </div>
+
+      <!-- Lista de Pratos -->
+      <div class="manager-card">
+        <div class="manager-card-title">✦ Pratos Cadastrados</div>
+        <div id="manager-loading" style="color:var(--text-light);font-size:0.8rem;text-align:center;padding:1rem">Carregando...</div>
+        <div class="manager-prato-list" id="manager-prato-list"></div>
+      </div>
+
+      <!-- Pedidos em aberto -->
+      <div class="manager-card">
+        <div class="manager-card-title">✦ Pedidos em Aberto</div>
+        <div class="manager-prato-list" id="manager-pedidos-list"></div>
+      </div>
+
+      <!-- Divulgação -->
+      <div class="manager-card divulgacao-card">
+        <div class="manager-card-title">✦ Divulgação do Restaurante</div>
+        <div class="canais-grid">
+          <button class="canal-btn" id="canal-WHATSAPP" onclick="toggleCanal('WHATSAPP')">📱 WhatsApp</button>
+          <button class="canal-btn" id="canal-EMAIL" onclick="toggleCanal('EMAIL')">✉️ E-mail</button>
+          <button class="canal-btn" id="canal-INSTAGRAM" onclick="toggleCanal('INSTAGRAM')">📸 Instagram</button>
+          <button class="canal-btn" id="canal-FACEBOOK" onclick="toggleCanal('FACEBOOK')">👥 Facebook</button>
+          <button class="canal-btn" id="canal-TWITTER" onclick="toggleCanal('TWITTER')">🐦 Twitter</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mensagem</label>
+          <textarea class="form-input" id="div-msg" rows="3" placeholder="Ex: Novidades no cardápio! 🍽️" style="resize:vertical;font-family:'Montserrat',sans-serif;font-size:0.85rem;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destinatário / Perfil</label>
+          <input class="form-input" id="div-dest" type="text" placeholder="+55 71 99999-9999 / @restaurante / email@ex.com"/>
+        </div>
+        <button class="btn-primary" onclick="enviarDivulgacao()">Enviar Divulgação</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================
+//  CONFIGURAÇÃO DA API
+// =============================================
+const API = 'http://localhost:8080';
+
+// =============================================
+//  ESTADO GLOBAL
+// =============================================
+let currentUser = null;   // { id, username, role }
+let loginTab     = 'cliente';
+let cadastroTab  = 'cliente';
+let canaisSelecionados = new Set();
+
+// =============================================
+//  HELPERS HTTP
+// =============================================
+async function http(method, path, body = null) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || `Erro ${res.status}`);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+const get    = (path)        => http('GET',    path);
+const post   = (path, body)  => http('POST',   path, body);
+const put    = (path, body)  => http('PUT',    path, body);
+const patch  = (path, body)  => http('PATCH',  path, body);
+const del    = (path)        => http('DELETE', path);
+
+// =============================================
+//  LOGIN / LOGOUT / CADASTRO
+// =============================================
+function setLoginTab(tab) {
+  loginTab = tab;
+  document.querySelectorAll('.login-tab').forEach((b,i) =>
+    b.classList.toggle('active', (i===0&&tab==='cliente')||(i===1&&tab==='manager')));
+}
+
+function setCadastroTab(tab) {
+  cadastroTab = tab;
+  document.querySelectorAll('#page-cadastro .login-tab').forEach((b,i) =>
+    b.classList.toggle('active', (i===0&&tab==='cliente')||(i===1&&tab==='manager')));
+  document.getElementById('cad-cpf-group').style.display = tab === 'manager' ? 'block' : 'none';
+  document.getElementById('cad-cliente-extra').style.display = tab === 'cliente' ? 'block' : 'none';
+}
+
+async function doLogin() {
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!username || !password) { showError(errEl, 'Preencha todos os campos'); return; }
+
+  try {
+    // Busca usuário pelo username no endpoint correto
+    const endpoint = loginTab === 'manager' ? '/manager' : '/cliente';
+    const lista = await get(endpoint);
+    const field  = loginTab === 'manager' ? 'managerUsername' : 'clienteUsername';
+    const idField   = loginTab === 'manager' ? 'managerID' : 'clienteID';
+
+    const user = lista.find(u => u[field] === username);
+    if (!user) { showError(errEl, 'Usuário não encontrado'); return; }
+
+    // Em produção usaria JWT — aqui valida localmente pelo hash ou aceita
+    currentUser = { id: user[idField], username: user[field], role: loginTab };
+
+    document.getElementById('nav-user').textContent = username + (loginTab === 'manager' ? ' · Manager' : ' · Cliente');
+    document.getElementById('btn-logout').style.display = 'block';
+    document.getElementById('tab-manager').style.display = loginTab === 'manager' ? 'block' : 'none';
+
+    showPage(loginTab === 'manager' ? 'manager' : 'cardapio');
+    showToast('Bem-vindo, ' + username + '!');
+  } catch (e) {
+    showError(errEl, 'Erro ao conectar com a API. Verifique se o backend está rodando.');
+  }
+}
+
+async function doCadastro() {
+  const username = document.getElementById('cad-user').value.trim();
+  const password = document.getElementById('cad-pass').value.trim();
+  const errEl = document.getElementById('cad-error');
+  errEl.style.display = 'none';
+
+  if (!username || !password) { showError(errEl, 'Preencha todos os campos'); return; }
+
+  try {
+    if (cadastroTab === 'cliente') {
+      const telefone = document.getElementById('cad-telefone').value.trim();
+      const rede = document.getElementById('cad-rede').value.trim();
+      const email = document.getElementById('cad-email').value.trim();
+      await post('/cliente', {
+        clienteUsername: username,
+        clientePassword: password,
+        ...(telefone && { telefoneCliente: telefone }),
+        ...(rede && { redeSocialCliente: rede }),
+        ...(email && { emailCliente: email })
+      });
+    } else {
+      const cpf = document.getElementById('cad-cpf').value.trim();
+      if (cpf.length !== 11) { showError(errEl, 'CPF deve ter 11 dígitos'); return; }
+      await post('/manager', { managerUsername: username, managerPassword: password, managerCPF: parseInt(cpf, 10) });
+    }
+    showToast('Conta criada! Faça login.');
+    showPage('login');
+  } catch (e) {
+    showError(errEl, e.message || 'Erro ao cadastrar');
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('nav-user').textContent = '—';
+  document.getElementById('btn-logout').style.display = 'none';
+  document.getElementById('tab-manager').style.display = 'none';
+  document.getElementById('badge-pedidos').textContent = '0';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  showPage('login');
+  showToast('Até logo!');
+}
+
+// =============================================
+//  NAVEGAÇÃO
+// =============================================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+
+  const map = { login:'0', cadastro:'0', cardapio:'1', pedidos:'2', manager:'3' };
+  const tabs = document.querySelectorAll('.nav-tab');
+  if (map[id]) tabs[map[id]]?.classList.add('active');
+
+  if (id === 'cardapio') loadCardapio();
+  if (id === 'pedidos')  loadPedidos();
+  if (id === 'manager')  { loadManagerPratos(); loadManagerPedidos(); }
+}
+
+// =============================================
+//  CARDÁPIO
+// =============================================
+function statusLabel(s) {
+  const map = {
+    PREPARANDO:'Preparando', PRONTO:'Pronto', FINALIZADO:'Finalizado',
+    preparando:'Preparando', pronto:'Pronto', finalizado:'Finalizado',
+    Preparando:'Preparando', Pronto:'Pronto', Finalizado:'Finalizado'
+  };
+  return map[s] || s;
+}
+
+function statusClass(s) {
+  return (s||'').toLowerCase();
+}
+
+async function loadCardapio() {
+  const grid = document.getElementById('cardapio-grid');
+  const loading = document.getElementById('cardapio-loading');
+  grid.innerHTML = '';
+  loading.style.display = 'block';
+  try {
+    const pratos = await get('/prato');
+    loading.style.display = 'none';
+    if (!pratos.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light)">Nenhum prato disponível no momento.</div>';
+      return;
+    }
+    grid.innerHTML = pratos.map(p => `
+      <div class="prato-card">
+        <div class="prato-card-img">🍽️</div>
+        <div class="prato-card-body">
+          <div class="prato-card-nome">${p.pratoNome}</div>
+          <span class="prato-card-status status-${statusClass(p.statusPrato)}">${statusLabel(p.statusPrato)}</span>
+          <div class="prato-card-footer">
+            <div class="prato-card-valor">R$ ${Number(p.pratoValor).toFixed(2).replace('.',',')}</div>
+            <button class="btn-pedir" onclick="fazerPedido(${p.pratoID},'${p.pratoNome}',${p.pratoValor})"
+              ${(p.statusPrato||'').toUpperCase() === 'FINALIZADO' ? 'disabled' : ''}>
+              ${(p.statusPrato||'').toUpperCase() === 'FINALIZADO' ? 'Encerrado' : 'Pedir'}
+            </button>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    loading.style.display = 'none';
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:#f38ba8">
+      Não foi possível carregar o cardápio.<br><small>Verifique se a API está rodando em ${API}</small></div>`;
+  }
+}
+
+async function fazerPedido(pratoId, pratoNome, pratoValor) {
+  if (!currentUser) { showToast('Faça login para realizar pedidos'); showPage('login'); return; }
+  if (currentUser.role === 'manager') { showToast('Managers não realizam pedidos'); return; }
+  try {
+    await post('/pedidos', {
+      clienteID: currentUser.id,
+      pratoID: pratoId,
+      quantidade: 1
+    });
+    showToast('Pedido de ' + pratoNome + ' realizado!');
+    // Atualiza badge
+    const pedidos = await get('/pedidos/cliente/' + currentUser.id);
+    document.getElementById('badge-pedidos').textContent = pedidos.length;
+  } catch(e) {
+    showToast('Erro ao realizar pedido: ' + e.message);
+  }
+}
+
+// =============================================
+//  PEDIDOS
+// =============================================
+async function loadPedidos() {
+  const el = document.getElementById('pedidos-list');
+  if (!currentUser) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔒</div>
+      <div class="empty-state-text">Faça login para ver seus pedidos</div></div>`;
+    return;
+  }
+  el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-light)">Carregando...</div>';
+  try {
+    const endpoint = currentUser.role === 'manager' ? '/pedidos' : '/pedidos/cliente/' + currentUser.id;
+    const pedidos = await get(endpoint);
+    document.getElementById('badge-pedidos').textContent = pedidos.length;
+    if (!pedidos.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🍽️</div>
+        <div class="empty-state-text">Nenhum pedido ainda</div>
+        <div style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase">Explore nosso cardápio</div></div>`;
+      return;
+    }
+    el.innerHTML = pedidos.map(p => `
+      <div class="pedido-item">
+        <span style="font-size:1.8rem">🍽️</span>
+        <div class="pedido-info">
+          <div class="pedido-nome">${p.prato?.pratoNome || 'Prato #' + p.prato?.pratoID}</div>
+          <div class="pedido-meta">
+            ${p.dataPedido || ''} · Qtd: ${p.quantidade} ·
+            <span class="prato-card-status status-${statusClass(p.pedidoStatus)}" style="font-size:0.55rem;padding:0.15rem 0.4rem">
+              ${statusLabel(p.pedidoStatus)}
+            </span>
+          </div>
+        </div>
+        <div class="pedido-valor">R$ ${Number(p.valorTotal).toFixed(2).replace('.',',')}</div>
+        ${p.pedidoStatus !== 'CANCELADO' && p.pedidoStatus !== 'ENTREGUE' ? `
+          <button class="btn-delete" onclick="cancelarPedido(${p.pedidoID})" title="Cancelar">✕</button>` : ''}
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="text-align:center;padding:2rem;color:#f38ba8">Erro ao carregar pedidos: ${e.message}</div>`;
+  }
+}
+
+async function cancelarPedido(id) {
+  try {
+    await patch('/pedidos/' + id + '/cancelar');
+    showToast('Pedido cancelado');
+    loadPedidos();
+  } catch(e) {
+    showToast('Erro: ' + e.message);
+  }
+}
+
+// =============================================
+//  MANAGER — PRATOS
+// =============================================
+async function loadManagerPratos() {
+  const el = document.getElementById('manager-prato-list');
+  const loading = document.getElementById('manager-loading');
+  loading.style.display = 'block';
+  el.innerHTML = '';
+  try {
+    const pratos = await get('/prato');
+    loading.style.display = 'none';
+    if (!pratos.length) {
+      el.innerHTML = '<div style="color:var(--text-light);font-size:0.8rem;text-align:center;padding:1rem">Nenhum prato cadastrado</div>';
+      return;
+    }
+    el.innerHTML = pratos.map(p => `
+      <div class="manager-prato-item">
+        <span>🍽️</span>
+        <div class="manager-prato-nome">${p.pratoNome}</div>
+        <div class="manager-prato-valor">R$ ${Number(p.pratoValor).toFixed(2).replace('.',',')}</div>
+        <select class="btn-status ${statusClass(p.statusPrato)}" onchange="atualizarStatus(${p.pratoID}, this.value)">
+          <option value="Preparando" ${p.statusPrato==='Preparando'?'selected':''}>Preparando</option>
+          <option value="Pronto"     ${p.statusPrato==='Pronto'?'selected':''}>Pronto</option>
+          <option value="Finalizado" ${p.statusPrato==='Finalizado'?'selected':''}>Finalizado</option>
+        </select>
+        <button class="btn-delete" onclick="deletarPrato(${p.pratoID})">✕</button>
+      </div>`).join('');
+  } catch(e) {
+    loading.style.display = 'none';
+    el.innerHTML = `<div style="color:#f38ba8;font-size:0.8rem;padding:1rem">Erro: ${e.message}</div>`;
+  }
+}
+
+async function adicionarPrato() {
+  const nome   = document.getElementById('m-nome').value.trim();
+  const valor  = parseFloat(document.getElementById('m-valor').value);
+  const status = document.getElementById('m-status').value;
+  if (!nome || isNaN(valor) || valor <= 0) { showToast('Preencha nome e valor'); return; }
+  try {
+    await post('/prato', { pratoNome: nome, pratoValor: valor, statusPrato: status });
+    document.getElementById('m-nome').value = '';
+    document.getElementById('m-valor').value = '';
+    showToast('Prato adicionado!');
+    loadManagerPratos();
+    loadCardapio();
+  } catch(e) {
+    showToast('Erro: ' + e.message);
+  }
+}
+
+async function atualizarStatus(id, status) {
+  try {
+    await put('/prato/' + id, { statusPrato: status });
+    showToast('Status atualizado!');
+    loadManagerPratos();
+    loadCardapio();
+  } catch(e) {
+    showToast('Erro: ' + e.message);
+  }
+}
+
+async function deletarPrato(id) {
+  try {
+    await del('/prato/' + id);
+    showToast('Prato removido');
+    loadManagerPratos();
+    loadCardapio();
+  } catch(e) {
+    showToast('Erro: ' + e.message);
+  }
+}
+
+// =============================================
+//  MANAGER — PEDIDOS EM ABERTO
+// =============================================
+async function loadManagerPedidos() {
+  const el = document.getElementById('manager-pedidos-list');
+  try {
+    const pedidos = await get('/pedidos');
+    const abertos = pedidos.filter(p => p.pedidoStatus === 'PENDENTE' || p.pedidoStatus === 'EM_PREPARO');
+    if (!abertos.length) {
+      el.innerHTML = '<div style="color:var(--text-light);font-size:0.8rem;text-align:center;padding:1rem">Nenhum pedido em aberto</div>';
+      return;
+    }
+    el.innerHTML = abertos.map(p => `
+      <div class="manager-prato-item">
+        <span>🧾</span>
+        <div class="manager-prato-nome" style="font-size:0.9rem">
+          ${p.prato?.pratoNome || 'Prato #' + p.prato?.pratoID}<br>
+          <small style="color:var(--text-light)">Cliente #${p.cliente?.clienteID} · Qtd: ${p.quantidade}</small>
+        </div>
+        <div class="manager-prato-valor">R$ ${Number(p.valorTotal).toFixed(2).replace('.',',')}</div>
+        <select class="btn-status ${statusClass(p.pedidoStatus)}" onchange="atualizarStatusPedido(${p.pedidoID}, this.value)">
+          <option value="PENDENTE"   ${p.pedidoStatus==='PENDENTE'?'selected':''}>Pendente</option>
+          <option value="EM_PREPARO" ${p.pedidoStatus==='EM_PREPARO'?'selected':''}>Em Preparo</option>
+          <option value="ENTREGUE"   ${p.pedidoStatus==='ENTREGUE'?'selected':''}>Entregue</option>
+          <option value="CANCELADO"  ${p.pedidoStatus==='CANCELADO'?'selected':''}>Cancelado</option>
+        </select>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="color:#f38ba8;font-size:0.8rem;padding:1rem">Erro: ${e.message}</div>`;
+  }
+}
+
+async function atualizarStatusPedido(id, status) {
+  try {
+    await patch('/pedidos/' + id + '/status?status=' + status);
+    showToast('Status do pedido atualizado!');
+    loadManagerPedidos();
+  } catch(e) {
+    showToast('Erro: ' + e.message);
+  }
+}
+
+// =============================================
+//  DIVULGAÇÃO
+// =============================================
+function toggleCanal(canal) {
+  const btn = document.getElementById('canal-' + canal);
+  if (canaisSelecionados.has(canal)) { canaisSelecionados.delete(canal); btn.classList.remove('selected'); }
+  else { canaisSelecionados.add(canal); btn.classList.add('selected'); }
+}
+
+async function enviarDivulgacao() {
+  if (!currentUser) { showToast('Faça login como Manager'); return; }
+  const msg  = document.getElementById('div-msg').value.trim();
+  const dest = document.getElementById('div-dest').value.trim();
+  if (!canaisSelecionados.size) { showToast('Selecione ao menos um canal'); return; }
+  if (!msg) { showToast('Digite uma mensagem'); return; }
+
+  try {
+    // Envia uma divulgação por canal selecionado
+    for (const canal of canaisSelecionados) {
+      await post('/divulgacoes/manager/' + currentUser.id, {
+        canal,
+        mensagem: msg,
+        destinatario: dest
+      });
+    }
+    showToast('Divulgação enviada via ' + Array.from(canaisSelecionados).join(', ') + '!');
+    document.getElementById('div-msg').value = '';
+    document.getElementById('div-dest').value = '';
+    canaisSelecionados.clear();
+    document.querySelectorAll('.canal-btn').forEach(b => b.classList.remove('selected'));
+  } catch(e) {
+    showToast('Erro ao enviar: ' + e.message);
+  }
+}
+
+// =============================================
+//  UTILITÁRIOS
+// =============================================
+function showError(el, msg) {
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function showToast(msg) {
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// Carrega cardápio ao iniciar
+loadCardapio();
+</script>
+</body>
+</html>
