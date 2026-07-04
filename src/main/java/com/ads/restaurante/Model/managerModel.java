@@ -19,9 +19,16 @@ public class managerModel {
 
     private String managerPassword;
 
+    private String managerEmail;
 
+    public String getManagerEmail() {
+        return managerEmail;
+    }
 
-    //GETTERS E SETTERS
+    public void setManagerEmail(String managerEmail) {
+        this.managerEmail = managerEmail;
+    }
+//GETTERS E SETTERS
 
     public Long getManagerID() {
         return managerID;

@@ -6,6 +6,7 @@ import com.ads.restaurante.Model.pratoModel;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
+import com.ads.restaurante.Service.*;
 
 @RestController
 @RequestMapping("/prato")
@@ -13,10 +14,11 @@ public class pratoController {
 
     @Autowired
     private pratoRepository repository;
+    private pratoService service;
 
     @PostMapping("/addPrato")
     public String addprato(@RequestBody pratoModel model){
-        repository.save(model);
+        service.cadastrarPrato(model);
         return "Prato Salvo";
     }
 
@@ -32,7 +34,7 @@ public class pratoController {
         model.setPratoSaindo(DetailModel.getPratoSaindo());
         model.setPratoValor(DetailModel.getPratoValor());
 
-        return repository.save(model);
+        return service.cadastrarPrato(model);
     }
 
     @GetMapping

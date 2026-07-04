@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import com.ads.restaurante.Service.*;
 
 @RestController
 @RequestMapping("/managerLogin")
@@ -17,10 +18,11 @@ public class managerController {
 
     @Autowired
     private managerRepository repository;
+    private managerService service;
 
     @PostMapping("/addManager")
     public String addManager(@RequestBody managerModel model){
-        repository.save(model);
+        service.cadastrarManager(model);
         return "manager salvo";
     }
 
@@ -36,7 +38,7 @@ public class managerController {
         model.setManagerPassword(detailModel.getManagerPassword());
         model.setManagerUsername(detailModel.getManagerUsername());
 
-        return repository.save(model);
+        return service.cadastrarManager(model);
     }
 
     @GetMapping

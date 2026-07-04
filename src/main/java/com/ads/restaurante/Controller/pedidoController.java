@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import com.ads.restaurante.Service.*;
 
 @RestController
 @RequestMapping("/pedido")
@@ -21,6 +22,7 @@ public class pedidoController {
 
     @Autowired
     private pedidoRepository pedidoRepo;
+    private pedidoService service;
 
     @Autowired
     private clienteRepository clienteRepo;
@@ -56,7 +58,7 @@ public class pedidoController {
                 cliente, prato, qtd, total, "PENDENTE", LocalDateTime.now()
         );
 
-        return ResponseEntity.ok(pedidoRepo.save(pedido));
+        return ResponseEntity.ok(service.cadastrarPedido(pedido));
     }
 
     // ── GET /pedido ───────────────────────────────────────

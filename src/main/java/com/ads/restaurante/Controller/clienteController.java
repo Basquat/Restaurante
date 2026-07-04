@@ -3,14 +3,18 @@ package com.ads.restaurante.Controller;
 
 import com.ads.restaurante.Model.clienteModel;
 import com.ads.restaurante.Repository.clienteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.ads.restaurante.Service.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/cliente")
 public class clienteController {
 
+    @Autowired
     private clienteRepository repository;
+    private clienteService service;
 
     public clienteController(clienteRepository repository) {
         this.repository = repository;
@@ -18,7 +22,7 @@ public class clienteController {
 
     @PostMapping("/addCliente")
     public String addCliente(@RequestBody clienteModel model){
-        repository.save(model);
+        service.cadastrarCliente(model);
         return "Cliente Salvo";
     }
 
@@ -36,7 +40,7 @@ public class clienteController {
         model.setRedeSocialCliente(DetailModel.getRedeSocialCliente());
         model.setTelefoneCliente(DetailModel.getTelefoneCliente());
 
-        return repository.save(model);
+        return service.cadastrarCliente(model);
     }
 
     @GetMapping
