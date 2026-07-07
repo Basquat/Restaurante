@@ -3,7 +3,6 @@ package com.ads.restaurante.Model;
 import jakarta.persistence.*;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 
-// Espaço  para foreign key dos pratos
 
 @Entity
 public class managerModel {
@@ -14,26 +13,15 @@ public class managerModel {
     private Long managerID;
 
     private String managerUsername;
-
     private int managerCPF;
-
     private String managerPassword;
-
     private String managerEmail;
 
-    public String getManagerEmail() {
-        return managerEmail;
-    }
-
-    public void setManagerEmail(String managerEmail) {
-        this.managerEmail = managerEmail;
-    }
 //GETTERS E SETTERS
 
     public Long getManagerID() {
         return managerID;
     }
-
     public void setManagerID(Long managerID) {
         this.managerID = managerID;
     }
@@ -41,7 +29,6 @@ public class managerModel {
     public String getManagerUsername() {
         return managerUsername;
     }
-
     public void setManagerUsername(String managerUsername) {
         this.managerUsername = managerUsername;
     }
@@ -49,7 +36,6 @@ public class managerModel {
     public int getManagerCPF() {
         return managerCPF;
     }
-
     public void setManagerCPF(int managerCPF) {
         this.managerCPF = managerCPF;
     }
@@ -57,9 +43,15 @@ public class managerModel {
     public String getManagerPassword() {
         return managerPassword;
     }
-
     public void setManagerPassword(String managerPassword) {
         this.managerPassword = managerPassword;
+    }
+
+    public String getManagerEmail() {
+        return managerEmail;
+    }
+    public void setManagerEmail(String managerEmail) {
+        this.managerEmail = managerEmail;
     }
 
     //Constructor

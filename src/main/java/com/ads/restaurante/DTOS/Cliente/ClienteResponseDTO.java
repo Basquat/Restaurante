@@ -5,18 +5,15 @@ import com.ads.restaurante.Model.clienteModel;
 public record ClienteResponseDTO(
         Long clienteID,
         String clienteUsername,
-        String emailCliente,
-        String telefoneCliente,
-        String redeSocialCliente
+        String emailCliente
+
 ) {
-    // Construtor auxiliar muito útil: ele transforma uma entidade clienteModel diretamente em DTO de saída
+
     public ClienteResponseDTO(clienteModel cliente) {
         this(
                 cliente.getClienteID(),
                 cliente.getClienteUsername(),
-                cliente.getEmailCliente(),
-                cliente.getTelefoneCliente(),
-                cliente.getRedeSocialCliente()
+                cliente.getEmailCliente()
         );
     }
 }
