@@ -2,7 +2,8 @@ package com.ads.restaurante.DTOS.Manager;
 
 public record managerRequestDTO(
 //REQUEST DTO
-                String managerUsername,
+        Long managerID,
+        String managerUsername,
         String managerPassword,
         String managerEmail
 
